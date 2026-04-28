@@ -1,0 +1,81 @@
+# ------------------------------------------------------------------------------
+# STM32F072 platform library
+#
+# This library contains:
+#   - CMSIS headers
+#   - startup code
+#   - linker script
+#   - MCU specific configuration
+# ------------------------------------------------------------------------------
+
+add_library(platform_stm32f072 STATIC)
+
+# ------------------------------------------------------------------------------
+# Source files
+# ------------------------------------------------------------------------------
+
+file(GLOB CMSIS_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Device/ST/STM32F0xx/Source/Templates/*.c
+)
+
+target_sources(platform_stm32f072 PRIVATE
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/clock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/interrupt.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/startup/startup_stm32f072xb.s
+
+    ${CMSIS_SOURCES}
+)
+
+# ------------------------------------------------------------------------------
+# Include directories
+# ------------------------------------------------------------------------------
+
+target_include_directories(platform_stm32f072 PUBLIC
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Core/Include
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Device/ST/STM32F0xx/Include
+)
+
+# ------------------------------------------------------------------------------
+# Preprocessor definitions
+# ------------------------------------------------------------------------------
+
+target_compile_definitions(platform_stm32f072 PUBLIC
+    STM32F072xB
+)
+
+# ------------------------------------------------------------------------------
+# Compiler flags
+# ------------------------------------------------------------------------------
+
+target_compile_options(platform_stm32f072 PUBLIC
+
+    -Wall
+    -Wextra
+    -Wpedantic
+
+    -ffunction-sections
+    -fdata-sections
+)
+
+# ------------------------------------------------------------------------------
+# Linker script
+# ------------------------------------------------------------------------------
+
+set(LINKER_SCRIPT
+    ${CMAKE_CURRENT_SOURCE_DIR}/linker/STM32F072RBTx_FLASH.ld
+)
+
+target_link_options(platform_stm32f072 PUBLIC
+
+    -T${LINKER_SCRIPT}
+
+    -Wl,--gc-sections
+    -Wl,-Map=${CMAKE_BINARY_DIR}/${PROJECT_NAME}.map
+
+    --specs=nano.specs
+    --specs=nosys.specs
+)
