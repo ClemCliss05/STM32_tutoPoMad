@@ -1,18 +1,14 @@
-#include "gpio.hpp"
-#include "stm32f072xb.h"
+int main(void)
+{
+    int i;
 
-constexpr int led_pin = 5;
-constexpr int delay_cycles = 500000;
+    *(int *)0x40021014 |=  (0x01 <<17U);
+    *(int *)0x48000000 &= ~(0xC00);
+    *(int *)0x48000000 |=  (0x01 <<10U);
 
-auto main() -> int {
-
-    gpio::enable_port_a();
-    gpio::set_output(GPIOA, led_pin);
-
-    while (true) {
-        gpio::toggle(GPIOA, led_pin);
-
-        for (volatile int i = 0; i < delay_cycles; ++i) {
-        }
+    while(1)
+    {
+    	*(int *)0x48000014 ^= 0x00000020U;
+    	for (i=0; i<100000; i++);
     }
 }

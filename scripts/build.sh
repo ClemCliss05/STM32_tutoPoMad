@@ -4,7 +4,6 @@ set -e
 BUILD_DIR=build
 FIRMWARE_DIR=build/build_firmware
 TESTS_DIR=$BUILD_DIR/build_tests
-ELF_FILE=$BUILD_DIR/firmware.elf
 
 build() {
     cmake -B $FIRMWARE_DIR \
@@ -20,12 +19,6 @@ test() {
 }
 
 flash() {
-    ELF=$(ls build/*.elf | head -n 1)
-    echo "-------------------------------"
-    echo "GIVE THE DEVICE NAME TO connect JLINK COMMAND IN build.sh:"
-    echo "FLASHING $ELF FILE, GIVE THIS PATH TO loadfile JLINK COMMAND IN flash_jlink.sh:"
-    echo "-------------------------------"
-
     JLinkExe \
     -device STM32F072RB \
     -if SWD \

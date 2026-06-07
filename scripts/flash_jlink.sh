@@ -1,5 +1,5 @@
 r
-loadfile build/build_firmware/STM32_tutoPoMad.elf
+loadfile build/build_firmware/firmware.elf
 r
 g
 exit

@@ -13,7 +13,7 @@ add_executable(firmware
 
 set_target_properties(firmware PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    OUTPUT_NAME "${PROJECT_NAME}"
+    OUTPUT_NAME "firmware"
     PREFIX ""
     SUFFIX ".elf"
 )
@@ -51,19 +51,19 @@ add_custom_command(TARGET firmware POST_BUILD
     COMMAND ${CMAKE_OBJCOPY}
         -O binary
         $<TARGET_FILE:firmware>
-        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.bin
+        ${CMAKE_BINARY_DIR}/firmware.bin
 
     # HEX
     COMMAND ${CMAKE_OBJCOPY}
         -O ihex
         $<TARGET_FILE:firmware>
-        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.hex
+        ${CMAKE_BINARY_DIR}/firmware.hex
 
     # ASM
     COMMAND ${CMAKE_OBJDUMP}
         -d -S -C
         $<TARGET_FILE:firmware>
-        > ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.asm
+        > ${CMAKE_BINARY_DIR}/firmware.asm
 
     # SIZE
     COMMAND ${CMAKE_SIZE}
