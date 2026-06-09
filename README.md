@@ -1,107 +1,136 @@
-# STM32 Tuto PoMad
+# STM32F072 tuto PoMad
 
-Implementation of the series of PoMad tutorials to get familiar with STM32 micro-controller architecture and programming adapted to my firmware architecture and available tools.
+A modern tuto for STM32 microcontrollers focused on learning how to use an MCU.
+Go through the diferent commit in order to understand each steps.
 
 ---
 
 ## Purpose
 
-This project provides a solid foundation to build reliable embedded systems with STM32.
+This project provides a solid foundation for developing reliable and maintainable STM32 firmware.
 
-Key goals:
+Main objectives:
 
-- Separate business logic from hardware
-- Enable fast and reproducible testing
-- Improve code quality with static analysis
-- Support scalable and maintainable design
+- Separate application logic from hardware
+- Improve testability
+- Reduce coupling
+- Support long-term scalability
+- Integrate modern development workflows
+
+---
+
+## Tools
+
+VSCode main extensions:
+
+- C/C++
+- CMake Tools
+- Cortex-Debug
+- GitHub Actions
+- SARIF Viewer
+
+---
+
+## Architecture
+
+Layered architecture:
+
+```text
+app
+ ↓
+services
+ ↓
+core
+ ↓
+drivers
+ ↓
+platform (STM32F072)
+```
+
+See `ARCHITECTURE.md` for details.
 
 ---
 
 ## Project Structure
 
-```
-. ├── firmware/
-  |   ├── app/        # Entry point (main)  
-  |   ├── core/       # Hardware-independent modules
-  |   │   ├── logger/
-  |   │   ├── ringbuffer/
-  |   │   └── utils/
-  |   ├── services/   # Business logic 
-  |   │   └── sensor/ 
-  |   ├── drivers/    # Hardware interfaces
-  |   │   ├── gpio/
-  |   │   └── uart/
-  |   └── platform/   # Target-specific implementation
-  |       └── stm32f072/ 
-  |           ├── startup/ 
-  |           ├── linker/ 
-  |           ├── cmsis/ 
-  |           └── clock / interrupt 
-  ├── tests/          # Unit tests (host execution) 
-  ├── scripts/        # Build, analysis and tooling scripts
-  └── cmake/          # Toolchain configuration
+```text
+firmware/
+├── app/                  # Application entry point
+├── core/                 # Hardware-independent modules
+│   ├── logger/
+│   └── ringbuffer/
+├── services/             # Application services
+│   └── sensor/
+├── drivers/              # Peripheral drivers
+│   ├── gpio/
+│   └── uart/
+└── platform/
+    └── stm32f072/
+        ├── startup/
+        ├── linker/
+        ├── cmsis/
+        ├── clock.cpp
+        └── interrupt.cpp
+
+tests/                    # Host unit tests
+scripts/                  # Build and analysis tools
+cmake/                    # Toolchain configuration
 ```
 
 ---
 
-## Build
-
-### Firmware (cross-compilation)
+## Build Firmware
 
 ```bash
 ./scripts/build.sh
 ```
 
-Outputs:  
+Generated files:
 
-  - .elf
-  - .bin
-  - .hex
+```text
+firmware.elf
+firmware.bin
+firmware.hex
+firmware.map
+```
 
 ---
 
-### Tests (host)
+## Run Tests
 
 ```bash
-cmake -B build/tests -DANALYSIS=ON -DTESTS=ON
+cmake -B build/tests \
+    -DANALYSIS=ON \
+    -DTESTS=ON
+
 cmake --build build/tests
+
 ctest --test-dir build/tests
 ```
 
-Testing:
-
-  - Framework: GoogleTest  
-  - Scope: core and services  
-  - Runs on host (no hardware required)  
+Tests execute on the host using GoogleTest.
 
 ---
 
-### Static Analysis
+## Static Analysis
 
-#### clang-tidy
+### clang-format
+
+```bash
+./scripts/clang-format.sh
+```
+
+### clang-tidy
 
 ```bash
 ./scripts/clang-tidy.sh
 ```
 
-Scope:
-
-  - core
-  - services
-
-#### cppcheck
+### cppcheck
 
 ```bash
 ./scripts/cppcheck.sh
 ```
-
-Scope:
-
-  - core
-  - services
-  - tests
-
----
 
 ### CodeQL
 
@@ -109,79 +138,46 @@ Scope:
 ./scripts/codeql.sh
 ```
 
-Focus:
-
-  - security vulnerabilities
-  - memory issues
-  - unsafe patterns
-
 ---
 
-### CI/CD
+## CI/CD
 
-GitHub Actions pipeline includes:
+GitHub Actions automatically performs:
 
-#### Analysis job
+### Analysis
 
-  - clang-tidy
-  - cppcheck
-  - unit tests (ASAN / UBSAN)
+- clang-format validation
+- clang-tidy
+- cppcheck
+- unit tests
+- ASAN
+- UBSAN
 
-#### Firmware job
+### Firmware
 
-  - cross-compilation
-  - generation of .elf, .bin, .hex
+- ARM cross compilation
+- ELF generation
+- BIN generation
+- HEX generation
 
-#### CodeQL job
+### Security
 
-  - advanced security analysis
-  - Caching is used to speed up builds.
-
----
-
-## Development Workflow
-
-### Format code
-
-```bash
-./scripts/clang-format.sh
-```
-
-### Run all static analysis
-
-```bash
-./scripts/static_analysis.sh
-```
-
-### Run tests
-
-```bash
-ctest --test-dir build/tests
-```
+- CodeQL analysis
+- SARIF reporting
 
 ---
 
 ## Design Principles
 
-- Clear separation of layers
-- Hardware-independent core logic
-- Minimal coupling
+- Separation of concerns
+- Hardware abstraction
 - Testability first
-- Static analysis integration
-
----
-
-## Roadmap
-
-  - Power optimization strategies
-  - Communication stack integration
-  - RTOS support
-  - Security improvements
+- Dependency minimization
+- Reproducible builds
+- CI-driven quality control
 
 ---
 
 ## License
 
 MIT
-
----

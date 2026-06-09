@@ -4,7 +4,13 @@
 
 add_executable(firmware
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/stm32f0xx_it.c
+)
+
+target_include_directories(firmware PRIVATE
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 
 # ------------------------------------------------------------------------------

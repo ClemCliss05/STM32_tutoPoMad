@@ -15,7 +15,7 @@ add_library(platform_stm32f072 STATIC)
 # ------------------------------------------------------------------------------
 
 file(GLOB CMSIS_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Device/ST/STM32F0xx/Source/Templates/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/device/src/*.c
 )
 
 target_sources(platform_stm32f072 PRIVATE
@@ -34,9 +34,8 @@ target_sources(platform_stm32f072 PRIVATE
 
 target_include_directories(platform_stm32f072 PUBLIC
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Core/Include
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/Device/ST/STM32F0xx/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmsis/device/inc
 )
 
 # ------------------------------------------------------------------------------

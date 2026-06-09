@@ -1,112 +1,213 @@
-# Firmware Architecture
+# Architecture
 
 ## Objective
 
-Provide a clear, modular, and testable architecture for embedded systems.
+Provide a maintainable and testable firmware architecture for STM32-based systems.
 
-The design separates hardware-dependent code from portable logic to improve:
-
-- maintainability
-- testability
-- scalability
+The architecture isolates hardware-specific code from portable application logic.
 
 ---
 
-## Layered Architecture
+## Layer Overview
 
-app ↓ services ↓ core ↓ drivers ↓ platform
+```text
+app
+ ↓
+services
+ ↓
+core
+ ↓
+drivers
+ ↓
+platform
+```
 
 Each layer has a single responsibility.
 
 ---
 
-## Core
+## App
 
-- Hardware-independent
-- Fully testable on host
-- No external dependencies
+System entry point.
 
-Examples:
-- ringbuffer
-- logger
+Responsibilities:
+
+- system startup
+- initialization
+- application orchestration
+
+Files:
+
+```text
+firmware/app/
+```
 
 ---
 
 ## Services
 
-- Business logic layer
-- Uses core modules
-- No direct hardware access
+Application-specific behavior.
 
-Example:
-- sensor abstraction
+Responsibilities:
+
+- business logic
+- use case implementation
+- coordination between modules
+
+Examples:
+
+```text
+sensor/
+```
+
+Rules:
+
+- no register access
+- no STM32 dependencies
+
+---
+
+## Core
+
+Portable building blocks.
+
+Responsibilities:
+
+- reusable algorithms
+- utility modules
+- generic components
+
+Examples:
+
+```text
+logger/
+ringbuffer/
+```
+
+Rules:
+
+- fully platform independent
+- host testable
 
 ---
 
 ## Drivers
 
-- Low-level hardware access
-- Encapsulates peripherals
+Peripheral abstraction layer.
 
-Examples:
+Responsibilities:
+
 - UART
 - GPIO
+- peripheral access
 
-Constraints:
+Examples:
+
+```text
+gpio/
+uart/
+```
+
+Rules:
+
 - no business logic
-- minimal complexity
+- minimal abstraction cost
 
 ---
 
-## Platform
+## Platform (STM32F072)
 
-- Target-specific implementation
-- Not portable
+STM32-specific implementation.
+
+Responsibilities:
+
+- startup code
+- CMSIS integration
+- clock configuration
+- interrupt handling
+- linker configuration
+
+Structure:
+
+```text
+platform/stm32f072/
+├── startup/
+├── linker/
+├── cmsis/
+├── clock.cpp
+└── interrupt.cpp
+```
 
 Contains:
-- startup code
-- linker script
-- interrupt handling
-- hardware initialization
+
+- startup_stm32f072xb.s
+- STM32F072RBTx_FLASH.ld
+- CMSIS Core
+- STM32 device headers
 
 ---
 
-## App
+## Dependency Rules
 
-- Entry point (`main.cpp`)
-- Coordinates system behavior
+Allowed:
 
----
+```text
+app      → services
+services → core
+drivers  → platform
+```
 
-## Data Flow
+Forbidden:
 
-Input → Service → Core → Driver → Hardware
+```text
+core     → drivers
+core     → platform
+
+services → platform
+services → registers
+
+app      → registers
+```
 
 ---
 
 ## Build Modes
 
-### Firmware Mode
+### Firmware
 
+```text
 ANALYSIS=OFF
+```
 
-- Full build
-- Includes platform and drivers
-- Target: embedded device
+Builds:
+
+- app
+- services
+- core
+- drivers
+- platform
+
+Target:
+
+- STM32F072
 
 ---
 
-### Analysis Mode
+### Analysis
 
+```text
 ANALYSIS=ON
+```
 
-Builds only:
+Builds:
+
 - core
 - services
-- tests (optional)
+- tests
 
-Used for:
-- unit testing
+Used by:
+
+- GoogleTest
 - clang-tidy
 - cppcheck
 - CodeQL
@@ -115,55 +216,43 @@ Used for:
 
 ## Testing Strategy
 
-- Scope: core and services
-- Executed on host
-- Independent from hardware
+Host-based testing.
+
+Scope:
+
+- core
+- services
 
 Benefits:
+
 - fast execution
 - deterministic results
-- CI-friendly
+- hardware-independent validation
 
 ---
 
-## Static Analysis Strategy
+## Quality Strategy
 
-| Tool       | Scope                  |
-|------------|------------------------|
-| clang-tidy | core, services         |
-| cppcheck   | core, services, tests  |
-| CodeQL     | core, services         |
+Static analysis:
 
----
+| Tool | Purpose |
+| -------- | ---------- |
+| clang-format | formatting |
+| clang-tidy | code quality |
+| cppcheck | bug detection |
+| CodeQL | security analysis |
 
-## Key Design Choices
-
-### Separation of concerns
-
-- Core does not depend on drivers
-- Services do not access hardware directly
-- Platform is isolated
-
-### Hardware abstraction
-
-- Drivers isolate hardware details
-- Higher layers remain portable
-
-### Testability
-
-- Most code runs without hardware
-- Enables CI integration
+CI automatically executes all checks.
 
 ---
 
 ## Summary
 
-This architecture ensures:
+This architecture provides:
 
-- clean structure
-- strong testability
-- portability
-- readiness for industrial workflows
-
-
----
+- clear separation of layers
+- high testability
+- STM32 isolation
+- scalable firmware development
+- CI/CD readiness
+- security-oriented workflow
