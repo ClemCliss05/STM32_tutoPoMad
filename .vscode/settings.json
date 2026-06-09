@@ -1,3 +1,4 @@
 {
     "firmware.device": "STM32F072RB",
+    "cortex-debug.variableUseNaturalFormat": false,
 }

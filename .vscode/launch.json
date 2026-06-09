@@ -24,7 +24,7 @@
 
             "preLaunchTask": "Build Firmware",
 
-            "svdFile": "",
+            "svdFile": "${workspaceFolder}/debug/STM32F0x2.svd",
 
             "showDevDebugOutput": "raw",
 
