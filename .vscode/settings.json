@@ -1,5 +1,5 @@
 {
     "firmware.device": "STM32F072RB",
-    "cortex-debug.variableUseNaturalFormat": false,
+    "cortex-debug.variableUseNaturalFormat": true,
     "C_Cpp.default.compileCommands": "${workspaceFolder}/build/build_firmware/compile_commands.json"
 }
